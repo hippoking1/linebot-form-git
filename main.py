@@ -97,7 +97,8 @@ def handle_text(event):
             res.raise_for_status()
             form_data = res.json()
             form_url = form_data.get("formUrl", "未取得表單連結")
-            summary_url = form_data.get("summaryUrl", "未取得統計連結")
+            sheet_url = form_data.get("sheetUrl", "未取得統計連結")
+#            summary_url = form_data.get("summaryUrl", "未取得統計連結")
 
             reply_text = (
                 f"📋 表單建立成功：\n{form_url}\n\n"
