@@ -38,7 +38,8 @@ def handle_image(event):
     try:
         img_url = upload_to_imgbb(image_bytes, os.environ.get("IMGBB_API_KEY"))
         image_cache[user_id] = img_url
-        reply = "✅ 圖片已上傳，請輸入活動資訊：\n活動標題：XXX\n活動說明：YYY\n自訂題目："
+        reply = ("✅ 圖片已上傳，請輸入活動資訊：\n活動標題：XXX\n活動說明：YYY\n"
+                 "自訂題目：\n簡答：手機號碼\n單選：參加場次：上午,下午\n多選：飲食偏好：素,葷,皆可")
     except Exception as e:
         reply = f"❌ 圖片上傳失敗：{e}"
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply))
@@ -102,23 +103,14 @@ def handle_text(event):
             form_data = res.json()
             form_url = form_data.get("formUrl", "未取得表單連結")
             sheet_url = form_data.get("sheetUrl", "未取得回覆表單連結")
-
-            reply_text = (
-                f"📋 表單建立成功：\n{form_url}\n\n"
-                f"📊 回覆試算表：\n{sheet_url}"
-            )
+            reply_text = f"📋 表單建立成功：\n{form_url}\n\n📊 回覆試算表：\n{sheet_url}"
         except Exception as e:
             reply_text = f"❌ 建立表單失敗：{e}"
     else:
         reply_text = (
             "請使用以下格式輸入：\n"
-            "活動標題：XXX\n"
-            "活動說明：YYY\n"
-            "自訂題目：\n"
-            "簡答：手機號碼\n"
-            "單選：參加時段：上午,下午\n"
-            "多選：飲食偏好：葷食,素食"
-        )
+            "活動標題：XXX\n活動說明：YYY\n自訂題目：\n"
+            "簡答：手機號碼\n單選：參加場次：上午,下午\n多選：飲食偏好：素,葷,皆可")
 
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
