@@ -102,7 +102,7 @@ def handle_text(event):
 
             reply_text = (
                 f"📋 表單建立成功：\n{form_url}\n\n"
-                f"📊 回覆統計頁：\n{sheet_url}}"
+                f"📊 回覆統計頁：\n{sheet_url}"
             )
         except Exception as e:
             reply_text = f"❌ 建立表單失敗：{e}"
