@@ -2,5 +2,5 @@
 LINE_CHANNEL_ACCESS_TOKEN = "1B8l3C+yhc/0j3qdsnPHqlhppn3VJKbOGkW2ZlbGhNZb71/s6pUoFczHAMkgWQLBZk42upde+CM2g0DPTEHDSOQaBu/SHEjjIoCWxa1wD44oQFwqB0Dt7fAZwTcGUaZOLQX55pTeB3NFEJQn+HVEIAdB04t89/1O/w1cDnyilFU="
 LINE_CHANNEL_SECRET = "90dd77d117540e850d162403d0366d52"
 IMGBB_API_KEY = "5d529f89828ada7c888e19d0efec541e"
-GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyDQsk771nO5nd5k0FNxy4-G4z_6AOKmTtvkKrJUPfhV52kwnhzL_QssjhWtEbkvTNciQ/exec"
+GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVEzensPTCQfL29peWoPOtLpe5hjPX4_wueRqf2IqoEgpKz0Q588ZJFka9bzlLgToSSA/exec"
 GOOGLE_QUERY_URL = "https://script.google.com/macros/s/AKfycbwkSV3mbv9ggEEJkqBjdy6MY1ysFRK8gUXjXz_sNg4XV1HSlav1sWF-azFxnSCGfAJLHA/exec"

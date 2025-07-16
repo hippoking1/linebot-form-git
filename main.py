@@ -38,8 +38,10 @@ def handle_image(event):
     try:
         img_url = upload_to_imgbb(image_bytes, os.environ.get("IMGBB_API_KEY"))
         image_cache[user_id] = img_url
-        reply = ("✅ 圖片已上傳，請輸入活動資訊：\n活動標題：XXX\n活動說明：YYY\n"
-                 "自訂題目：\n簡答：手機號碼\n單選：參加場次：上午,下午\n多選：飲食偏好：素,葷,皆可")
+        reply = (
+            "✅ 圖片已上傳，請輸入活動資訊：\n活動標題：XXX\n活動說明：YYY\n"
+            "自訂預設題目：\n姓名：聯絡人姓名\n身份別：志工類型：社會大眾,環保志工,慈濟志工\n參加人數：停用\n"
+            "自訂題目：\n簡答：手機號碼\n單選：參加場次：上午,下午\n多選：飲食偏好：素食,葷食")
     except Exception as e:
         reply = f"❌ 圖片上傳失敗：{e}"
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply))
@@ -49,20 +51,6 @@ def handle_text(event):
     user_id = event.source.user_id
     text = event.message.text
 
-    if text.startswith("查詢活動："):
-        title = text.split("查詢活動：")[1].strip()
-        try:
-            query_url = os.environ.get("GOOGLE_QUERY_URL")
-            res = requests.get(query_url, params={"title": title})
-            res.raise_for_status()
-            data = res.json()
-            names = data.get("names", [])
-            reply_text = f"📊 活動：{title}\n參加者（{len(names)}人）：\n- " + "\n- ".join(names)
-        except Exception as e:
-            reply_text = f"❌ 查詢失敗：{e}"
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
-        return
-
     image_url = image_cache.get(user_id, "")
 
     if "活動標題：" in text and "活動說明：" in text:
@@ -70,7 +58,34 @@ def handle_text(event):
             lines = text.split("\n")
             title = lines[0].replace("活動標題：", "").strip()
             description = lines[1].replace("活動說明：", "").strip()
+            default_questions = {}
             questions = []
+
+            if "自訂預設題目：" in text:
+                idx = lines.index("自訂預設題目：")
+                for line in lines[idx+1:]:
+                    if line == "自訂題目：":
+                        break
+                    if line.startswith("姓名："):
+                        dq_title = line.replace("姓名：", "").strip()
+                        if dq_title != "停用":
+                            default_questions["姓名"] = {"title": dq_title}
+                        else:
+                            default_questions["姓名"] = {"enable": False}
+                    elif line.startswith("身份別："):
+                        q_part = line.replace("身份別：", "").strip()
+                        if "：" in q_part:
+                            dq_title, dq_choices = q_part.split("：", 1)
+                            choices = [c.strip() for c in dq_choices.split(",")]
+                            default_questions["身份別"] = {"title": dq_title.strip(), "choices": choices}
+                        elif q_part == "停用":
+                            default_questions["身份別"] = {"enable": False}
+                    elif line.startswith("參加人數："):
+                        dq_title = line.replace("參加人數：", "").strip()
+                        if dq_title != "停用":
+                            default_questions["參加人數"] = {"title": dq_title}
+                        else:
+                            default_questions["參加人數"] = {"enable": False}
 
             if "自訂題目：" in text:
                 idx = lines.index("自訂題目：")
@@ -95,6 +110,7 @@ def handle_text(event):
                 "title": title,
                 "description": description,
                 "imageUrl": image_url,
+                "defaultQuestions": default_questions,
                 "questions": questions
             }
 
@@ -103,14 +119,15 @@ def handle_text(event):
             form_data = res.json()
             form_url = form_data.get("formUrl", "未取得表單連結")
             sheet_url = form_data.get("sheetUrl", "未取得回覆表單連結")
-            reply_text = f"📋 表單建立成功：\n{form_url}\n\n📊 回覆試算表：\n{sheet_url}"
+            reply_text = f"✅ 表單建立成功：\n{form_url}\n\n📊 回覆試算表：\n{sheet_url}"
         except Exception as e:
             reply_text = f"❌ 建立表單失敗：{e}"
     else:
         reply_text = (
             "請使用以下格式輸入：\n"
-            "活動標題：XXX\n活動說明：YYY\n自訂題目：\n"
-            "簡答：手機號碼\n單選：參加場次：上午,下午\n多選：飲食偏好：素,葷,皆可")
+            "活動標題：XXX\n活動說明：YYY\n自訂預設題目：\n"
+            "姓名：聯絡人姓名\n身份別：志工類型：社會大眾,環保志工,慈濟志工\n參加人數：停用\n"
+            "自訂題目：\n簡答：手機號碼\n單選：參加場次：上午,下午\n多選：飲食偏好：素食,葷食")
 
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
