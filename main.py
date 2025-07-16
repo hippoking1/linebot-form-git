@@ -40,8 +40,8 @@ def handle_image(event):
         image_cache[user_id] = img_url
         reply = (
             "✅ 圖片已上傳，請輸入活動資訊：\n活動標題：XXX\n活動說明：YYY\n"
-            "自訂預設題目：\n姓名：聯絡人姓名\n身份別：志工類型：社會大眾,環保志工,慈濟志工\n參加人數：停用\n"
-            "自訂題目：\n簡答：手機號碼\n單選：參加場次：上午,下午\n多選：飲食偏好：素食,葷食")
+            "自訂預設題目：\n姓名：\n身份別：一般民眾,環保志工,慈濟志工\n參加人數：停用\n"
+            "自訂題目：\n簡答：手機號碼\n單選：參加場次：上午,下午\n多選：飲食偏好：蛋奶素,全素,皆可")
     except Exception as e:
         reply = f"❌ 圖片上傳失敗：{e}"
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply))
@@ -126,8 +126,8 @@ def handle_text(event):
         reply_text = (
             "請使用以下格式輸入：\n"
             "活動標題：XXX\n活動說明：YYY\n自訂預設題目：\n"
-            "姓名：聯絡人姓名\n身份別：志工類型：社會大眾,環保志工,慈濟志工\n參加人數：停用\n"
-            "自訂題目：\n簡答：手機號碼\n單選：參加場次：上午,下午\n多選：飲食偏好：素食,葷食")
+            "姓名：\n身份別：一般民眾,環保志工,慈濟志工\n參加人數：停用\n"
+            "自訂題目：\n簡答：手機號碼\n單選：參加場次：上午,下午\n多選：飲食偏好：蛋奶素,全素,皆可")
 
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
