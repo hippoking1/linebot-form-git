@@ -39,11 +39,9 @@ def handle_image(event):
         img_url = upload_to_imgbb(image_bytes, os.environ.get("IMGBB_API_KEY"))
         image_cache[user_id] = img_url
         reply = (
-            "✅ 圖片已上傳，請使用以下格式輸入：\n活動標題：XXX\n活動說明：YYY\n"
-            "\n"
+            "✅ 圖片已上傳，請輸入活動資訊：\n活動標題：XXX\n活動說明：YYY\n"
             "自訂預設題目：\n姓名：聯絡人姓名\n身份別：志工類型：社會大眾,環保志工,慈濟志工\n參加人數：停用\n"
-            "\n"
-            "自訂題目：\n簡答：手機號碼\n單選：參加場次：上午,下午\n多選：飲食偏好：蛋奶素,全素,皆可")
+            "自訂題目：\n簡答：手機號碼\n單選：參加場次：上午,下午\n多選：飲食偏好：素食,葷食")
     except Exception as e:
         reply = f"❌ 圖片上傳失敗：{e}"
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply))
@@ -59,7 +57,17 @@ def handle_text(event):
         try:
             lines = text.split("\n")
             title = lines[0].replace("活動標題：", "").strip()
-            description = lines[1].replace("活動說明：", "").strip()
+
+            # 取得活動說明段落
+            description = ""
+            start_idx = [i for i, line in enumerate(lines) if line.startswith("活動說明：")][0]
+            description_lines = []
+            for line in lines[start_idx:]:
+                if line.startswith("自訂預設題目：") or line.startswith("自訂題目："):
+                    break
+                description_lines.append(line.strip())
+            description = "\n".join(description_lines).replace("活動說明：", "").strip()
+
             default_questions = {}
             questions = []
 
@@ -127,11 +135,9 @@ def handle_text(event):
     else:
         reply_text = (
             "請使用以下格式輸入：\n"
-            "活動標題：XXX\n活動說明：YYY\n"
-            "\n"
-            "自訂預設題目：\n姓名：聯絡人姓名\n身份別：志工類型：社會大眾,環保志工,慈濟志工\n參加人數：停用\n"
-            "\n"
-            "自訂題目：\n簡答：手機號碼\n單選：參加場次：上午,下午\n多選：飲食偏好：蛋奶素,全素,皆可")
+            "活動標題：XXX\n活動說明：YYY\n自訂預設題目：\n"
+            "姓名：聯絡人姓名\n身份別：志工類型：社會大眾,環保志工,慈濟志工\n參加人數：停用\n"
+            "自訂題目：\n簡答：手機號碼\n單選：參加場次：上午,下午\n多選：飲食偏好：素食,葷食")
 
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
